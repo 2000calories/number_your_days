@@ -10,7 +10,7 @@ class EventCreateScreen extends StatefulWidget {
 }
 
 class _EventCreateScreenState extends State<EventCreateScreen> {
-  final int _selectedIndex = 1;
+  final int _selectedIndex = 0;
   static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController eventDateFieldController =
       TextEditingController();
@@ -20,14 +20,15 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
       TextEditingController();
   String _eventName;
   String _eventType = 'Passed';
+  List<String> eventTypes = ['Annual','Passed', 'Future'];
   DateTime _eventDate;
 
   Future _selectEventDate() async {
     DateTime picked = await showDatePicker(
         context: context,
         initialDate: new DateTime.now(),
-        firstDate: new DateTime(1900),
-        lastDate: new DateTime(2100));
+        firstDate:  _eventType=='Future'?new DateTime.now():new DateTime(1900),
+        lastDate: _eventType=='Passed'?new DateTime.now(): new DateTime(2100));
     if (picked != null) {
       setState(() => _eventDate = picked);
       eventDateFieldController.text = DateFormat('yyyy-MM-dd').format(picked);
@@ -52,7 +53,7 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
               _eventType = newValue;
             });
           },
-          items: <String>['Passed', 'Future']
+          items: eventTypes
               .map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,

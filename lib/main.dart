@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
           switch (index) {
             case 0:
-              Navigator.of(context).pushNamed('/');
+              Navigator.of(context).pushReplacementNamed('/');
               break;
             default:
           }

@@ -12,6 +12,29 @@ class EventItem extends StatelessWidget {
     @required this.event,
   }) : super(key: key);
 
+  int numberEventDays(Event event) {
+    int number;
+    switch (event.eventType) {
+      case 'Passed':
+        number = DateTime.now().difference(event.eventDate).inDays;
+        break;
+      case 'Future':
+        number = event.eventDate.difference(DateTime.now()).inDays;
+        break;
+      case 'Annual':
+        number = event.eventDate.difference(DateTime.now()).inDays;
+        if (number < 0) {
+          number = DateTime(event.eventDate.year + 1, event.eventDate.month,
+                  event.eventDate.day)
+              .difference(DateTime.now())
+              .inDays;
+        }
+        break;
+      default:
+    }
+    return number;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,13 +45,10 @@ class EventItem extends StatelessWidget {
             width: MediaQuery.of(context).size.width / 2 - 1,
             child: ListTile(
               onTap: onTap,
-              title: Hero(
-                tag: '${event.id}__heroTag',
-                child: Container(
-                  child: Text(
-                    event.id.toString() + event.eventName,
-                    style: Theme.of(context).textTheme.body2,
-                  ),
+              title: Container(
+                child: Text(
+                  event.eventName,
+                  style: Theme.of(context).textTheme.body2,
                 ),
               ),
               subtitle: Text(
@@ -45,17 +65,7 @@ class EventItem extends StatelessWidget {
               onTap: onTap,
               title: Container(
                 child: Text(
-                  event.eventType == 'Passed'
-                      ? (DateTime.now()
-                              .difference(event.eventDate)
-                              .inDays
-                              .toString()) +
-                          ' Days'
-                      : (event.eventDate
-                              .difference(DateTime.now())
-                              .inDays
-                              .toString()) +
-                          ' Days',
+                  numberEventDays(event).toString() + ' Days',
                   style: Theme.of(context).textTheme.body2,
                 ),
               ),

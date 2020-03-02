@@ -16,17 +16,17 @@ class _EventEditScreenState extends State<EventEditScreen> {
   final Event event;
   _EventEditScreenState({@required this.event});
 
-  final int _selectedIndex = 1;
-  static final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final int _selectedIndex = 0;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController eventDateFieldController =
       TextEditingController();
   final TextEditingController eventNameFieldController =
       TextEditingController();
-  final TextEditingController eventTypeFieldController =
-      TextEditingController();
+
   String _eventName;
   String _eventType;
   DateTime _eventDate;
+  List<String> eventTypes = ['Annual','Passed', 'Future'];
 
   @override
   initState() {
@@ -35,7 +35,6 @@ class _EventEditScreenState extends State<EventEditScreen> {
       _eventType = event.eventType;
       _eventDate = event.eventDate;
       eventNameFieldController.text = _eventName;
-      eventTypeFieldController.text = _eventType;
       eventDateFieldController.text =
           DateFormat('yyyy-MM-dd').format(_eventDate);
     });
@@ -43,11 +42,12 @@ class _EventEditScreenState extends State<EventEditScreen> {
   }
 
   Future _selectEventDate() async {
+    var now = new DateTime.now();
     DateTime picked = await showDatePicker(
         context: context,
-        initialDate: new DateTime.now(),
-        firstDate: new DateTime(1900),
-        lastDate: new DateTime(2100));
+        initialDate: now,
+        firstDate:  _eventType=='Future'?now:new DateTime(1900),
+        lastDate: _eventType=='Passed'?now: new DateTime(2100));
     if (picked != null) {
       setState(() => _eventDate = picked);
       eventDateFieldController.text = DateFormat('yyyy-MM-dd').format(picked);
@@ -72,7 +72,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
               _eventType = newValue;
             });
           },
-          items: <String>['Passed', 'Future']
+          items: eventTypes
               .map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
@@ -91,7 +91,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create'),
+        title: Text('Edit'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -163,7 +163,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
             _formKey.currentState.save();
             event.id = event.id;
             event.eventName = eventNameFieldController.text;
-            event.eventType = eventTypeFieldController.text;
+            event.eventType = _eventType;
             event.eventDate = DateTime.parse(eventDateFieldController.text);
             eventsBloc.add(UpdateEvent(updatedEvent: event));
             Navigator.pop(context);
@@ -177,7 +177,6 @@ class _EventEditScreenState extends State<EventEditScreen> {
   void dispose() {
     eventDateFieldController.dispose();
     eventNameFieldController.dispose();
-    eventTypeFieldController.dispose();
     super.dispose();
   }
 }
