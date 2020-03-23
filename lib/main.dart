@@ -7,6 +7,7 @@ import 'package:number_your_days/screens/event_list.dart';
 import 'blocs/simple_bloc_delegate.dart';
 import 'blocs/events/bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'widgets/bottom_nav_bar.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
@@ -36,68 +37,45 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: [
         FlutterBlocLocalizationsDelegate(),
       ],
-      home: MyHomePage(title: 'Number Your Days'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  MyHomePage({
+    Key key,
+  }) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final int _selectedIndex = 0;
+  final title = 'Number Your Days';
 
   @override
   Widget build(BuildContext context) {
     //ignore: close_sinks
-    final EventsBloc eventsBloc = BlocProvider.of<EventsBloc>(context);
 
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: EventListScreen(),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            title: Text('List'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            title: Text('Setting'),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green,
-        onTap: (index) {
-          if (index == _selectedIndex) {
-            eventsBloc.add(LoadEvents());
-            return;
-          }
-          switch (index) {
-            case 0:
-              Navigator.of(context).pushReplacementNamed('/');
-              break;
-            default:
-          }
-        },
+      bottomNavigationBar: MyBottomNavBar(
+        selectedIndex: 0,
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: null,
         onPressed: () {
           Navigator.pushNamed(context, '/eventCreate');
         },
         tooltip: 'Add',
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }

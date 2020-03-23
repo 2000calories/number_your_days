@@ -1,17 +1,11 @@
 import 'package:number_your_days/models/event.dart';
 import 'package:sqflite/sqflite.dart';
 
-final String databaseEvent = "events";
-final String tableEvent = "events";
-final String columnId = 'id';
-final String columnEventName = "event_name";
-final String columnEventDate = "event_date";
-final String columnEventType = "event_type";
-
 class EventDataProvider {
   Database db;
 
   Future open(String path) async {
+    //await deleteDatabase(path);
     db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute('''
@@ -19,7 +13,10 @@ create table $tableEvent (
   $columnId integer primary key autoincrement, 
   $columnEventName text not null, 
   $columnEventDate text not null,
-  $columnEventType text not null)
+  $columnIsAnnual integer DEFAULT 0,
+  $columnDaysAhead integer DEFAULT 0,
+  $columnEveryNDays integer DEFAULT 0
+  )
 ''');
     });
   }
@@ -31,7 +28,14 @@ create table $tableEvent (
 
   Future<Event> getEvent(int id) async {
     List<Map> maps = await db.query(tableEvent,
-        columns: [columnId, columnEventName, columnEventDate, columnEventType],
+        columns: [
+          columnId,
+          columnEventName,
+          columnEventDate,
+          columnIsAnnual,
+          columnDaysAhead,
+          columnEveryNDays
+        ],
         where: '$columnId = ?',
         whereArgs: [id]);
     if (maps.length > 0) {
@@ -55,8 +59,10 @@ create table $tableEvent (
       var event = new Event(
         id: eventRecord[columnId],
         eventName: eventRecord[columnEventName],
-        eventType: eventRecord[columnEventType],
         eventDate: DateTime.parse(eventRecord[columnEventDate]),
+        isAnnual: eventRecord[columnIsAnnual] == 1 ? true : false,
+        daysAhead: (eventRecord[columnDaysAhead]),
+        everyNDays:(eventRecord[columnEveryNDays]),
       );
       return event;
     }).toList();

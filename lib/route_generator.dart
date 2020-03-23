@@ -5,14 +5,18 @@ import 'main.dart';
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     // Getting arguments passed in while calling Navigator.pushNamed
-    final Map<String,dynamic> args = settings.arguments;
+    final Map<String, dynamic> args = settings.arguments;
     switch (settings.name) {
-      case '/':
+      case '/home':
         return FadeRoute(page: MyHomePage());
       case '/eventCreate':
-        return MaterialPageRoute(builder: (_) => EventCreateScreen());
+        return FadeRoute(page: EventCreateScreen());
       case '/eventEdit':
-        return MaterialPageRoute(builder: (_) => EventEditScreen(event:args['event']));
+        return FadeRoute(page: EventEditScreen(event: args['event']));
+      case '/calculator':
+        return FadeRoute(page: CalculatorScreen());
+      case '/settings':
+        return FadeRoute(page: SettingsScreen());
       default:
         // If there is no such named route in the switch statement, e.g. /third
         return _errorRoute();

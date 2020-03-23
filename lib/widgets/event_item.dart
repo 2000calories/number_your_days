@@ -13,26 +13,22 @@ class EventItem extends StatelessWidget {
   }) : super(key: key);
 
   int numberEventDays(Event event) {
-    int number;
-    switch (event.eventType) {
-      case 'Passed':
-        number = DateTime.now().difference(event.eventDate).inDays;
-        break;
-      case 'Future':
-        number = event.eventDate.difference(DateTime.now()).inDays;
-        break;
-      case 'Annual':
-        number = event.eventDate.difference(DateTime.now()).inDays;
-        if (number < 0) {
-          number = DateTime(event.eventDate.year + 1, event.eventDate.month,
-                  event.eventDate.day)
-              .difference(DateTime.now())
-              .inDays;
-        }
-        break;
-      default:
-    }
+    int number = DateTime.now().difference(event.eventDate).inDays;
     return number;
+  }
+
+  String annualEventNotification(Event event) {
+    var number = event.eventDate.difference(DateTime.now()).inDays;
+    if (number < 0) {
+      number = DateTime(event.eventDate.year + 1, event.eventDate.month,
+              event.eventDate.day)
+          .difference(DateTime.now())
+          .inDays;
+    }
+    if (number == 0) {
+      return "Anniversary";
+    }
+    return number.toString() + " until next anniversary";
   }
 
   @override
@@ -70,7 +66,7 @@ class EventItem extends StatelessWidget {
                 ),
               ),
               subtitle: Text(
-                event.eventType,
+                event.isAnnual ? annualEventNotification(event) : "",
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(context).textTheme.subhead,

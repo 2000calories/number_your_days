@@ -1,23 +1,34 @@
+final String databaseEvent = "events";
 final String tableEvent = "events";
 final String columnId = 'id';
 final String columnEventName = "event_name";
 final String columnEventDate = "event_date";
-final String columnEventType = "event_type";
+final String columnIsAnnual = "is_annual";
+final String columnDaysAhead = "days_ahead";
+final String columnEveryNDays = "every_n_days";
 
 class Event {
   int id;
   DateTime eventDate;
   String eventName;
-  String eventType;
-  Event({this.id,this.eventName, this.eventDate, this.eventType});
-
-  String today = new DateTime.now().toString();
+  bool isAnnual;
+  int daysAhead;
+  int everyNDays;
+  Event(
+      {this.id,
+      this.eventName,
+      this.eventDate,
+      this.isAnnual,
+      this.daysAhead,
+      this.everyNDays});
 
   Map<String, dynamic> toMap() {
     var map = <String, dynamic>{
       columnEventName: eventName,
       columnEventDate: eventDate.toIso8601String(),
-      columnEventType: eventType,
+      columnIsAnnual: isAnnual,
+      columnDaysAhead: daysAhead,
+      columnEveryNDays: everyNDays,
     };
     if (id != null) {
       map[columnId] = id;
@@ -29,7 +40,8 @@ class Event {
     id = map[columnId];
     eventName = map[columnEventName];
     eventDate = DateTime.parse(map[columnEventDate]);
-    eventType = map[columnEventType];
+    isAnnual = map[columnIsAnnual];
+    daysAhead = map[columnDaysAhead];
+    everyNDays = map[columnEveryNDays];
   }
 }
-

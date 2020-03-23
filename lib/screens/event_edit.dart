@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:number_your_days/blocs/events/bloc.dart';
 import 'package:number_your_days/models/event.dart';
+import 'package:number_your_days/widgets/widgets.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class EventEditScreen extends StatefulWidget {
   final Event event;
@@ -16,73 +18,7 @@ class _EventEditScreenState extends State<EventEditScreen> {
   final Event event;
   _EventEditScreenState({@required this.event});
 
-  final int _selectedIndex = 0;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController eventDateFieldController =
-      TextEditingController();
-  final TextEditingController eventNameFieldController =
-      TextEditingController();
-
-  String _eventName;
-  String _eventType;
-  DateTime _eventDate;
-  List<String> eventTypes = ['Annual','Passed', 'Future'];
-
-  @override
-  initState() {
-    setState(() {
-      _eventName = event.eventName;
-      _eventType = event.eventType;
-      _eventDate = event.eventDate;
-      eventNameFieldController.text = _eventName;
-      eventDateFieldController.text =
-          DateFormat('yyyy-MM-dd').format(_eventDate);
-    });
-    super.initState();
-  }
-
-  Future _selectEventDate() async {
-    var now = new DateTime.now();
-    DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: now,
-        firstDate:  _eventType=='Future'?now:new DateTime(1900),
-        lastDate: _eventType=='Passed'?now: new DateTime(2100));
-    if (picked != null) {
-      setState(() => _eventDate = picked);
-      eventDateFieldController.text = DateFormat('yyyy-MM-dd').format(picked);
-    }
-  }
-
-  _selectEventType() {
-    return InputDecorator(
-      decoration: InputDecoration(
-        labelText: 'Event Type',
-        labelStyle: TextStyle(fontSize: 22),
-        hintText: '',
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _eventType,
-          iconSize: 24,
-          isDense: true,
-          isExpanded: true,
-          onChanged: (String newValue) {
-            setState(() {
-              _eventType = newValue;
-            });
-          },
-          items: eventTypes
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(value),
-            );
-          }).toList(),
-        ),
-      ),
-    );
-  }
+  final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
@@ -93,79 +29,80 @@ class _EventEditScreenState extends State<EventEditScreen> {
       appBar: AppBar(
         title: Text('Edit'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: [
-              TextFormField(
-                controller: eventNameFieldController,
-                style: TextStyle(fontSize: 16),
-                decoration: InputDecoration(
-                  labelText: 'Event Name',
-                  hintText: '',
-                ),
-                validator: (val) {
-                  return val.trim().isEmpty
-                      ? 'localizations.emptyTodoError'
-                      : null;
-                },
-                onSaved: (value) => _eventName = value,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: FormBuilder(
+            key: _fbKey,
+            initialValue: {
+              'event_name': event.eventName,
+              'event_date': event.eventDate,
+              'is_annual': event.isAnnual,
+              'every_n_days': event.everyNDays.toString(),
+              'days_ahead': event.daysAhead.toString(),
+            },
+            autovalidate: true,
+            child: Column(children: <Widget>[
+              FormBuilderTextField(
+                attribute: "event_name",
+                decoration: InputDecoration(labelText: "Event Name"),
+                validators: [
+                  FormBuilderValidators.required(),
+                ],
               ),
-              new FormField(
-                builder: (FormFieldState state) {
-                  return _selectEventType();
-                },
+              FormBuilderDateTimePicker(
+                attribute: "event_date",
+                inputType: InputType.date,
+                format: DateFormat("yyyy-MM-dd"),
+                decoration: InputDecoration(labelText: "Appointment Time"),
+                validators: [
+                  FormBuilderValidators.required(),
+                ],
               ),
-              TextFormField(
-                controller: eventDateFieldController,
-                style: TextStyle(fontSize: 16),
-                decoration: InputDecoration(
-                  labelText: 'Event Date',
-                  hintText: '',
-                ),
-                onSaved: (value) => _eventDate = DateTime.parse(value),
-                onTap: () => _selectEventDate(),
-              )
-            ],
+              FormBuilderCheckbox(
+                attribute: 'is_annual',
+                leadingInput: true,
+                label: Text("Is this an annual event?"),
+              ),
+              FormBuilderTextField(
+                attribute: "every_n_days",
+                decoration: InputDecoration(labelText: "Remind Every N Days"),
+                validators: [
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.numeric(),
+                ],
+              ),
+              FormBuilderTextField(
+                attribute: "days_ahead",
+                decoration: InputDecoration(labelText: "Remind N Days Ahead"),
+                validators: [
+                  FormBuilderValidators.required(),
+                  FormBuilderValidators.numeric(),
+                ],
+              ),
+            ]),
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            title: Text('List'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            title: Text('Setting'),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green,
-        onTap: (index) {
-          if (index == _selectedIndex) {}
-          switch (index) {
-            case 0:
-              Navigator.of(context).pushNamed('/');
-              break;
-            default:
-          }
-        },
+      bottomNavigationBar: MyBottomNavBar(
+        selectedIndex: 0,
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'Update',
-        child: Icon(Icons.add),
+        child: Icon(Icons.done),
         onPressed: () {
-          if (_formKey.currentState.validate()) {
-            _formKey.currentState.save();
-            event.id = event.id;
-            event.eventName = eventNameFieldController.text;
-            event.eventType = _eventType;
-            event.eventDate = DateTime.parse(eventDateFieldController.text);
-            eventsBloc.add(UpdateEvent(updatedEvent: event));
+          if (_fbKey.currentState.saveAndValidate()) {
+            var value = _fbKey.currentState.value;
+
+            var updatedEvent = Event(
+              id: event.id,
+              eventName: value['event_name'],
+              eventDate: value['event_date'],
+              isAnnual: value['is_annual'],
+              everyNDays: int.parse(value['every_n_days']),
+              daysAhead: int.parse(value['days_ahead']),
+            );
+            eventsBloc.add(UpdateEvent(updatedEvent: updatedEvent));
             Navigator.pop(context);
           }
         },
@@ -175,8 +112,6 @@ class _EventEditScreenState extends State<EventEditScreen> {
 
   @override
   void dispose() {
-    eventDateFieldController.dispose();
-    eventNameFieldController.dispose();
     super.dispose();
   }
 }
