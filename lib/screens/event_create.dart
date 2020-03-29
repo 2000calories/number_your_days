@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:number_your_days/common.dart';
 import 'package:intl/intl.dart';
-import 'package:number_your_days/blocs/events/bloc.dart';
 import 'package:number_your_days/models/event.dart';
-import 'package:number_your_days/widgets/widgets.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class EventCreateScreen extends StatefulWidget {
@@ -13,15 +10,17 @@ class EventCreateScreen extends StatefulWidget {
 
 class _EventCreateScreenState extends State<EventCreateScreen> {
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
+  final everyNDaysController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     //ignore: close_sinks
     final EventsBloc eventsBloc = BlocProvider.of<EventsBloc>(context);
-
+    everyNDaysController.text = "1000";
+    
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create'),
+        title: Text('Create'.i18n),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -31,7 +30,6 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
             initialValue: {
               'event_date': DateTime.now(),
               'is_annual': false,
-              'every_n_days': '0',
               'days_ahead': '0'
             },
             autovalidate: true,
@@ -55,13 +53,13 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
               FormBuilderCheckbox(
                 attribute: 'is_annual',
                 leadingInput: true,
-                label: Text("Is this an annual event?"),
+                label: Text("Is this an annual event?".i18n),
               ),
               FormBuilderTextField(
+                controller: everyNDaysController,
                 attribute: "every_n_days",
-                decoration: InputDecoration(labelText: "Remind Every N Days"),
+                decoration: InputDecoration(labelText: "Remind Every N Days".i18n),
                 validators: [
-                  FormBuilderValidators.required(),
                   FormBuilderValidators.numeric(),
                 ],
               ),
@@ -69,8 +67,11 @@ class _EventCreateScreenState extends State<EventCreateScreen> {
                 attribute: "days_ahead",
                 decoration: InputDecoration(labelText: "Remind N Days Ahead"),
                 validators: [
-                  FormBuilderValidators.required(),
                   FormBuilderValidators.numeric(),
+                  FormBuilderValidators.max(int.parse(
+                      everyNDaysController.text == ""
+                          ? "1"
+                          : everyNDaysController.text))
                 ],
               ),
             ]),

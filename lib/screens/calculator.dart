@@ -1,6 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:number_your_days/common.dart';
 import 'package:intl/intl.dart';
-import '../widgets/bottom_nav_bar.dart';
 
 class CalculatorScreen extends StatefulWidget {
   @override
@@ -119,7 +118,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: true,
-          title: Text('Calculation'),
+          title: Text('Calculator'.i18n),
         ),
         body: Padding(
           padding: EdgeInsets.all(16.0),
@@ -131,7 +130,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   controller: startDateFieldController,
                   style: TextStyle(fontSize: 16),
                   decoration: InputDecoration(
-                    labelText: 'Start Date',
+                    labelText: 'Start Date'.i18n,
                     hintText: '',
                   ),
                   onTap: () => _selectStartDate(),
@@ -140,7 +139,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   controller: endDateFieldController,
                   style: TextStyle(fontSize: 16),
                   decoration: InputDecoration(
-                    labelText: 'End Date',
+                    labelText: 'End Date'.i18n,
                     hintText: '',
                   ),
                   onTap: () => _selectEndDate(),
@@ -150,7 +149,7 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
                   controller: numberFieldController,
                   style: TextStyle(fontSize: 16),
                   decoration: InputDecoration(
-                    labelText: 'Number of Days',
+                    labelText: 'Number of Days'.i18n,
                     hintText: '1000',
                   ),
                   onChanged: (value) => changeNumber(),

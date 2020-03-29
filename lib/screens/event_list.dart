@@ -1,7 +1,5 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:number_your_days/widgets/event_item.dart';
-import '../blocs/events/bloc.dart';
+import 'package:number_your_days/common.dart';
+import 'package:number_your_days/models/event.dart';
 
 class EventListScreen extends StatefulWidget {
   @override
@@ -9,6 +7,26 @@ class EventListScreen extends StatefulWidget {
 }
 
 class _EventListScreenState extends State<EventListScreen> {
+  List<Event> events;
+  TextEditingController filterController = new TextEditingController();
+  String filter;
+
+  @override
+  void initState() {
+    super.initState();
+    filterController.addListener(() {
+      setState(() {
+        filter = filterController.text;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    filterController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<EventsBloc, EventsState>(
@@ -18,7 +36,7 @@ class _EventListScreenState extends State<EventListScreen> {
             child: CircularProgressIndicator(),
           );
         } else if (state is EventsLoaded) {
-          final events = state.events;
+          events = state.events;
           return Column(
             children: <Widget>[
               //search and filter box
@@ -29,12 +47,10 @@ class _EventListScreenState extends State<EventListScreen> {
                     Flexible(
                       child: TextField(
                         decoration: InputDecoration(
-                            border: InputBorder.none, hintText: 'Search'),
+                            border: InputBorder.none, hintText: 'Search'.i18n),
+                        controller: filterController,
                       ),
                     ),
-                    Container(
-                      width: 100,
-                      child: DropdownButton(items: null, onChanged: null))
                   ],
                 ),
               ),
@@ -44,16 +60,31 @@ class _EventListScreenState extends State<EventListScreen> {
                 child: ListView.builder(
                   itemCount: events.length,
                   itemBuilder: (BuildContext context, int index) {
-                    final event = events[index];
+                    var event = events[index];
                     Map<String, dynamic> arguments = new Map();
                     arguments['event'] = event;
-                    return EventItem(
-                      event: event,
-                      onTap: () async {
-                        Navigator.of(context)
-                            .pushNamed('/eventEdit', arguments: arguments);
-                      },
-                    );
+                    if (filter == null || filter == "") {
+                      return EventItem(
+                        event: event,
+                        onTap: () async {
+                          Navigator.of(context)
+                              .pushNamed('/eventEdit', arguments: arguments);
+                        },
+                      );
+                    }
+                    if (event.eventName
+                        .toLowerCase()
+                        .contains(filter.toLowerCase())) {
+                      return EventItem(
+                        event: event,
+                        onTap: () async {
+                          Navigator.of(context)
+                              .pushNamed('/eventEdit', arguments: arguments);
+                        },
+                      );
+                    } else {
+                      return Container();
+                    }
                   },
                 ),
               ),

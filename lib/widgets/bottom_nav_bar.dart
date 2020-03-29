@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../translation.i18n.dart';
 
 class MyBottomNavBar extends StatelessWidget {
   final int selectedIndex;
@@ -8,18 +9,18 @@ class MyBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.list),
-          title: Text('List'),
+          title: Text('List'.i18n),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.timer),
-          title: Text('Calculator'),
+          title: Text('Calculator'.i18n),
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.settings),
-          title: Text('Setting'),
+          title: Text('Setting'.i18n),
         ),
       ],
       currentIndex: selectedIndex,

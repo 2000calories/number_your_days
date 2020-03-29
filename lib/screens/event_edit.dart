@@ -1,9 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:number_your_days/common.dart';
 import 'package:intl/intl.dart';
-import 'package:number_your_days/blocs/events/bloc.dart';
 import 'package:number_your_days/models/event.dart';
-import 'package:number_your_days/widgets/widgets.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
 class EventEditScreen extends StatefulWidget {
@@ -19,15 +16,17 @@ class _EventEditScreenState extends State<EventEditScreen> {
   _EventEditScreenState({@required this.event});
 
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
+  final everyNDaysController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     //ignore: close_sinks
     final EventsBloc eventsBloc = BlocProvider.of<EventsBloc>(context);
+    everyNDaysController.text = event.everyNDays.toString();
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit'),
+        title: Text('Edit'.i18n),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -62,13 +61,13 @@ class _EventEditScreenState extends State<EventEditScreen> {
               FormBuilderCheckbox(
                 attribute: 'is_annual',
                 leadingInput: true,
-                label: Text("Is this an annual event?"),
+                label: Text("Is this an annual event?".i18n),
               ),
               FormBuilderTextField(
+                controller: everyNDaysController,
                 attribute: "every_n_days",
-                decoration: InputDecoration(labelText: "Remind Every N Days"),
+                decoration: InputDecoration(labelText: "Remind Every N Days".i18n),
                 validators: [
-                  FormBuilderValidators.required(),
                   FormBuilderValidators.numeric(),
                 ],
               ),
@@ -78,6 +77,8 @@ class _EventEditScreenState extends State<EventEditScreen> {
                 validators: [
                   FormBuilderValidators.required(),
                   FormBuilderValidators.numeric(),
+                  FormBuilderValidators.max(
+                      int.parse(everyNDaysController.text == "" ? "1" : everyNDaysController.text))
                 ],
               ),
             ]),

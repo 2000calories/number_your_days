@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:number_your_days/widgets/bottom_nav_bar.dart';
+import 'package:number_your_days/common.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -8,7 +7,7 @@ class SettingsScreen extends StatelessWidget {
         appBar: AppBar(
           automaticallyImplyLeading: false,
           centerTitle: true,
-          title: Text('Settings'),
+          title: Text('Setting'.i18n),
         ),
         body: Padding(
           padding: EdgeInsets.all(16.0),

@@ -1,13 +1,12 @@
-import 'package:flutter/material.dart';
 import 'package:number_your_days/data_providers/event_data_provider.dart';
-import 'package:number_your_days/localization.dart';
 import 'package:bloc/bloc.dart';
 import 'package:number_your_days/route_generator.dart';
 import 'package:number_your_days/screens/event_list.dart';
 import 'blocs/simple_bloc_delegate.dart';
-import 'blocs/events/bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'widgets/bottom_nav_bar.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:i18n_extension/i18n_widget.dart';                 
+import 'common.dart';
 
 void main() {
   BlocSupervisor.delegate = SimpleBlocDelegate();
@@ -29,15 +28,21 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Number Your Days',
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('en'),
+        const Locale('zh', "CN"),
+        const Locale('zh', "HK"),
+      ],
       onGenerateRoute: RouteGenerator.generateRoute,
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      localizationsDelegates: [
-        FlutterBlocLocalizationsDelegate(),
-      ],
-      home: MyHomePage(),
+      home: I18n(child: MyHomePage()),
     );
   }
 }
@@ -56,13 +61,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    //ignore: close_sinks
-
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         centerTitle: true,
-        title: Text(title),
+        title: Text(title.i18n),
       ),
       body: EventListScreen(),
       bottomNavigationBar: MyBottomNavBar(
