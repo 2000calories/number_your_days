@@ -40,6 +40,7 @@ class MyApp extends StatelessWidget {
       ],
       onGenerateRoute: RouteGenerator.generateRoute,
       theme: ThemeData(
+        primaryColor:  Colors.green,
         primarySwatch: Colors.green,
       ),
       home: I18n(child: MyHomePage()),

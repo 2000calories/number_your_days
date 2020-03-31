@@ -62,11 +62,16 @@ create table $tableEvent (
         eventDate: DateTime.parse(eventRecord[columnEventDate]),
         isAnnual: eventRecord[columnIsAnnual] == 1 ? true : false,
         daysAhead: (eventRecord[columnDaysAhead]),
-        everyNDays:(eventRecord[columnEveryNDays]),
+        everyNDays: (eventRecord[columnEveryNDays]),
       );
       return event;
     }).toList();
     return events;
+  }
+
+  Future getEventTableData() async {
+    List<Map<String, dynamic>> eventRecords = await db.query(tableEvent);
+    return eventRecords;
   }
 
   Future close() async => db.close();
